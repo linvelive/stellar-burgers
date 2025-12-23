@@ -39,6 +39,7 @@ export const FeedInfo: FC = () => {
       readyOrders={readyOrders}
       pendingOrders={pendingOrders}
       feed={{
+        orders,
         total,
         totalToday
       }}
