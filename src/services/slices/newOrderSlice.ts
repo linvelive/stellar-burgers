@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { orderBurgerApi } from '../../utils/burger-api';
 import { TOrder } from '@utils-types';
+import { RootState } from 'src/services/store';
+import { R } from '@storybook/react/dist/types-0fc72a6d';
 
 type TNewOrderState = {
   orderRequest: boolean;
@@ -50,7 +52,9 @@ const newOrderSlice = createSlice({
 
 export const { resetOrder } = newOrderSlice.actions;
 
-export const getOrderModalData = (state: any) => state.newOrder.orderModalData;
-export const getOrderRequest = (state: any) => state.newOrder.orderRequest;
+export const getOrderModalData = (state: RootState) =>
+  state.newOrder.orderModalData;
+export const getOrderRequest = (state: RootState) =>
+  state.newOrder.orderRequest;
 
 export default newOrderSlice.reducer;

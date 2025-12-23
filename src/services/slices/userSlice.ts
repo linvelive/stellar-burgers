@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState } from '../../services/store';
 import { TUser } from '../../utils/types';
 import {
   loginUserApi,
@@ -139,10 +140,10 @@ const userSlice = createSlice({
 });
 
 // --- Selectors ---
-export const getUserSelector = (state: any) => state.user.user;
-export const getIsAuthCheckedSelector = (state: any) =>
+export const getUserSelector = (state: RootState) => state.user.user;
+export const getIsAuthCheckedSelector = (state: RootState) =>
   state.user.isAuthChecked;
-export const getUserErrorSelector = (state: any) => state.user.error;
+export const getUserErrorSelector = (state: RootState) => state.user.error;
 
 export const { authChecked } = userSlice.actions;
 export default userSlice.reducer;
