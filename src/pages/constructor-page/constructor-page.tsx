@@ -1,4 +1,5 @@
 import { useSelector } from '../../services/store';
+import { RootState } from '../../services/store';
 
 import styles from './constructor-page.module.css';
 
@@ -11,7 +12,7 @@ export const ConstructorPage: FC = () => {
   // Check if ingredients are currently loading
   // Note: We use 'any' for state to avoid type errors for now
   const isIngredientsLoading = useSelector(
-    (state: any) => state.ingredients.loading
+    (state: RootState) => state.ingredients.loading
   );
 
   return (
