@@ -1,4 +1,4 @@
-import { FeedInfoUI } from '@ui';
+import { FeedInfoUI } from '../components/ui/feed-info/feed-info';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
@@ -21,7 +21,7 @@ export const DefaultFeedInfo: Story = {
       orders: [
         {
           _id: '11111',
-          status: 'ready',
+          status: 'done',
           name: 'Burger',
           createdAt: '',
           updatedAt: '',
@@ -30,9 +30,7 @@ export const DefaultFeedInfo: Story = {
         }
       ],
       total: 12,
-      totalToday: 2,
-      isLoading: false,
-      error: null
+      totalToday: 2
     },
     readyOrders: [123, 124, 125],
     pendingOrders: [126, 127]

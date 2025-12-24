@@ -1,24 +1,31 @@
 import { FC, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import { useSelector } from '../../services/store';
+import { getIngredientsSelector } from '../../services/slices/ingredientsSlice'; //
+import { getOrdersSelector } from '../../services/slices/ordersSlice';
+import { getFeedOrdersSelector } from '../../services/slices/feedSlice';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
 
 export const OrderInfo: FC = () => {
   /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const { number } = useParams<{ number: string }>(); // Grabs number from URL
 
-  const ingredients: TIngredient[] = [];
+  const ingredients = useSelector(getIngredientsSelector); // Pulls ingredients
+  const feedOrders = useSelector(getFeedOrdersSelector);
+  const personalOrders = useSelector(getOrdersSelector); // Pulls personal orders
+
+  // Find the specific order based on the URL number
+  const orderData = useMemo(() => {
+    if (!number) return null;
+    const allOrders = [...feedOrders, ...personalOrders];
+    return allOrders.find((item) => item.number === Number(number));
+  }, [number, feedOrders, personalOrders]);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
+    // If orderData or ingredients aren't ready, return null to show Preloader
     if (!orderData || !ingredients.length) return null;
 
     const date = new Date(orderData.createdAt);
