@@ -1,15 +1,19 @@
-import { setCookie, getCookie } from './cookie';
-import { TIngredient, TOrder, TOrdersData, TUser } from './types';
+import { getCookie, setCookie } from './cookie';
+import { TIngredient, TOrder, TUser } from './types';
 
-const DEFAULT_BURGER_API_URL = 'https://norma.education-services.ru/api';
-const envApiUrl = process.env.BURGER_API_URL;
+const getBurgerApiUrl = () => {
+  const url =
+    typeof process.env.BURGER_API_URL === 'string'
+      ? process.env.BURGER_API_URL
+      : '';
 
-// dotenv-webpack can leave missing values unresolved in CI builds.
-// Fallback prevents accidental requests to relative paths like "/ingredients".
-const URL =
-  envApiUrl && !String(envApiUrl).includes('MISSING_ENV_VAR')
-    ? envApiUrl
-    : DEFAULT_BURGER_API_URL;
+  if (!url) {
+    throw new Error(
+      'BURGER_API_URL is missing. Set it in Vercel Environment Variables or in local .env.'
+    );
+  }
+  return url;
+};
 
 const checkResponse = <T>(res: Response): Promise<T> =>
   res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
@@ -24,7 +28,7 @@ type TRefreshResponse = TServerResponse<{
 }>;
 
 export const refreshToken = (): Promise<TRefreshResponse> =>
-  fetch(`${URL}/auth/token`, {
+  fetch(`${getBurgerApiUrl()}/auth/token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
@@ -80,7 +84,7 @@ type TOrdersResponse = TServerResponse<{
 }>;
 
 export const getIngredientsApi = () =>
-  fetch(`${URL}/ingredients`)
+  fetch(`${getBurgerApiUrl()}/ingredients`)
     .then((res) => checkResponse<TIngredientsResponse>(res))
     .then((data) => {
       if (data?.success) return data.data;
@@ -88,7 +92,7 @@ export const getIngredientsApi = () =>
     });
 
 export const getFeedsApi = (): Promise<TFeedsResponse> =>
-  fetch(`${URL}/orders/all`)
+  fetch(`${getBurgerApiUrl()}/orders/all`)
     .then((res) => checkResponse<TFeedsResponse>(res))
     .then((data) => {
       if (data?.success) return data;
@@ -96,7 +100,7 @@ export const getFeedsApi = (): Promise<TFeedsResponse> =>
     });
 
 export const getOrdersApi = () =>
-  fetchWithRefresh<TFeedsResponse>(`${URL}/orders`, {
+  fetchWithRefresh<TFeedsResponse>(`${getBurgerApiUrl()}/orders`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -113,7 +117,7 @@ type TNewOrderResponse = TServerResponse<{
 }>;
 
 export const orderBurgerApi = (data: string[]) =>
-  fetchWithRefresh<TNewOrderResponse>(`${URL}/orders`, {
+  fetchWithRefresh<TNewOrderResponse>(`${getBurgerApiUrl()}/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -132,7 +136,7 @@ type TOrderResponse = TServerResponse<{
 }>;
 
 export const getOrderByNumberApi = (number: number) =>
-  fetch(`${URL}/orders/${number}`, {
+  fetch(`${getBurgerApiUrl()}/orders/${number}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
@@ -152,7 +156,7 @@ type TAuthResponse = TServerResponse<{
 }>;
 
 export const registerUserApi = (data: TRegisterData) =>
-  fetch(`${URL}/auth/register`, {
+  fetch(`${getBurgerApiUrl()}/auth/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
@@ -171,7 +175,7 @@ export type TLoginData = {
 };
 
 export const loginUserApi = (data: TLoginData) =>
-  fetch(`${URL}/auth/login`, {
+  fetch(`${getBurgerApiUrl()}/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
@@ -185,7 +189,7 @@ export const loginUserApi = (data: TLoginData) =>
     });
 
 export const forgotPasswordApi = (data: { email: string }) =>
-  fetch(`${URL}/password-reset`, {
+  fetch(`${getBurgerApiUrl()}/password-reset`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
@@ -199,7 +203,7 @@ export const forgotPasswordApi = (data: { email: string }) =>
     });
 
 export const resetPasswordApi = (data: { password: string; token: string }) =>
-  fetch(`${URL}/password-reset/reset`, {
+  fetch(`${getBurgerApiUrl()}/password-reset/reset`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
@@ -215,14 +219,14 @@ export const resetPasswordApi = (data: { password: string; token: string }) =>
 type TUserResponse = TServerResponse<{ user: TUser }>;
 
 export const getUserApi = () =>
-  fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
+  fetchWithRefresh<TUserResponse>(`${getBurgerApiUrl()}/auth/user`, {
     headers: {
       authorization: getCookie('accessToken')
     } as HeadersInit
   });
 
 export const updateUserApi = (user: Partial<TRegisterData>) =>
-  fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
+  fetchWithRefresh<TUserResponse>(`${getBurgerApiUrl()}/auth/user`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -232,7 +236,7 @@ export const updateUserApi = (user: Partial<TRegisterData>) =>
   });
 
 export const logoutApi = () =>
-  fetch(`${URL}/auth/logout`, {
+  fetch(`${getBurgerApiUrl()}/auth/logout`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
