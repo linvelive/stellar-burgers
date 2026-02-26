@@ -54,7 +54,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html'
     }),
-    new Dotenv()
+    new Dotenv({
+      // Vercel/CI env vars are provided as system envs, not from a local .env file.
+      systemvars: true
+    })
   ],
   resolve: {
     extensions: [
