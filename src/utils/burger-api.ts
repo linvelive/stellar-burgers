@@ -1,7 +1,15 @@
 import { setCookie, getCookie } from './cookie';
 import { TIngredient, TOrder, TOrdersData, TUser } from './types';
 
-const URL = process.env.BURGER_API_URL;
+const DEFAULT_BURGER_API_URL = 'https://norma.education-services.ru/api';
+const envApiUrl = process.env.BURGER_API_URL;
+
+// dotenv-webpack can leave missing values unresolved in CI builds.
+// Fallback prevents accidental requests to relative paths like "/ingredients".
+const URL =
+  envApiUrl && !String(envApiUrl).includes('MISSING_ENV_VAR')
+    ? envApiUrl
+    : DEFAULT_BURGER_API_URL;
 
 const checkResponse = <T>(res: Response): Promise<T> =>
   res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
