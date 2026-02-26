@@ -52,7 +52,8 @@ module.exports = {
       extensions: ['.js', '.jsx', '.ts', '.tsx']
     }),
     new HtmlWebpackPlugin({
-      template: './public/index.html'
+      template: './public/index.html',
+      favicon: './public/favicon.ico'
     }),
     new Dotenv({
       // Vercel/CI env vars are provided as system envs, not from a local .env file.
