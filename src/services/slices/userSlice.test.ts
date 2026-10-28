@@ -10,8 +10,7 @@ import reducer, {
 describe('userSlice reducer', () => {
   const initialState = {
     isAuthChecked: false,
-    user: null,
-    error: null
+    user: null
   };
 
   const mockUser = {
@@ -32,7 +31,6 @@ describe('userSlice reducer', () => {
       const state = reducer(initialState, action);
       expect(state.user).toEqual(mockUser);
       expect(state.isAuthChecked).toBe(true);
-      expect(state.error).toBeNull();
     });
 
     it('должен сохранять пользователя при registerUser.fulfilled', () => {
@@ -42,15 +40,13 @@ describe('userSlice reducer', () => {
       expect(state.isAuthChecked).toBe(true);
     });
 
-    it('должен записывать ошибку при loginUser.rejected', () => {
-      const error = 'Login failed';
+    it('marks auth as checked on loginUser.rejected without storing a user', () => {
       const action = {
         type: loginUser.rejected.type,
-        error: { message: error }
+        error: { message: 'email or password is incorrect' }
       };
       const state = reducer(initialState, action);
-      expect(state.error).toBe(error);
-      expect(state.isAuthChecked).toBe(true);
+      expect(state).toEqual({ isAuthChecked: true, user: null });
     });
   });
 
