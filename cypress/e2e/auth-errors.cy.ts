@@ -37,7 +37,7 @@ describe('Auth form errors', () => {
     cy.contains('email or password is incorrect').should('be.visible');
   });
 
-  it('shows a fallback when the server answers without a JSON body', () => {
+  it('shows the status when the server answers without a JSON body', () => {
     cy.intercept('POST', '**/api/auth/login', {
       statusCode: 502,
       headers: { 'content-type': 'text/html' },
@@ -50,7 +50,22 @@ describe('Auth form errors', () => {
     cy.get('form[name=login] button[type=submit]').click();
     cy.wait('@login');
 
-    cy.contains('Login failed').should('be.visible');
+    cy.contains('Request failed with status 502').should('be.visible');
+  });
+
+  it('shows the status when password recovery gets no JSON body', () => {
+    cy.intercept('POST', '**/api/password-reset', {
+      statusCode: 502,
+      headers: { 'content-type': 'text/html' },
+      body: '<html>Bad Gateway</html>'
+    }).as('recover');
+
+    cy.visit('/forgot-password');
+    cy.get('input[name=email]').type('user@example.com');
+    cy.get('form button[type=submit]').click();
+    cy.wait('@recover');
+
+    cy.contains('Request failed with status 502').should('be.visible');
   });
 
   it('shows the server message after a failed registration', () => {
