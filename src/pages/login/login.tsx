@@ -1,4 +1,5 @@
 import { FC, SyntheticEvent, useState } from 'react';
+import { SerializedError } from '@reduxjs/toolkit';
 import { LoginUI } from '@ui-pages';
 import { useDispatch } from '../../services/store';
 import { loginUser } from '../../services/slices/userSlice';
@@ -6,16 +7,22 @@ import { loginUser } from '../../services/slices/userSlice';
 export const Login: FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorText, setErrorText] = useState('');
   const dispatch = useDispatch();
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
+    setErrorText('');
+    dispatch(loginUser({ email, password }))
+      .unwrap()
+      .catch((err: SerializedError) =>
+        setErrorText(err.message || 'Login failed')
+      );
   };
 
   return (
     <LoginUI
-      errorText=''
+      errorText={errorText}
       email={email}
       setEmail={setEmail}
       password={password}

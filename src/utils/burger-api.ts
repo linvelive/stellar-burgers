@@ -16,7 +16,12 @@ const getBurgerApiUrl = () => {
 };
 
 const checkResponse = <T>(res: Response): Promise<T> =>
-  res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
+  res.ok
+    ? res.json()
+    : res
+        .json()
+        .catch(() => ({ success: false }))
+        .then((err) => Promise.reject(err));
 
 type TServerResponse<T> = {
   success: boolean;

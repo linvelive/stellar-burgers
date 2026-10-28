@@ -16,14 +16,12 @@ import { setCookie, deleteCookie } from '../../utils/cookie';
 type TUserState = {
   isAuthChecked: boolean;
   user: TUser | null;
-  error: string | null;
 };
 
 // 2. Apply the type to initialState
 const initialState: TUserState = {
   isAuthChecked: false,
-  user: null,
-  error: null
+  user: null
 };
 
 // --- Thunks ---
@@ -96,21 +94,15 @@ const userSlice = createSlice({
     builder.addCase(registerUser.fulfilled, (state, action) => {
       state.user = action.payload;
       state.isAuthChecked = true;
-      state.error = null;
-    });
-    builder.addCase(registerUser.rejected, (state, action) => {
-      state.error = action.error.message || 'Register failed';
     });
 
     // Login
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.user = action.payload;
       state.isAuthChecked = true;
-      state.error = null;
     });
-    builder.addCase(loginUser.rejected, (state, action) => {
+    builder.addCase(loginUser.rejected, (state) => {
       state.isAuthChecked = true;
-      state.error = action.error.message || 'Login failed';
     });
 
     // Check Auth
@@ -131,10 +123,6 @@ const userSlice = createSlice({
     // Update User
     builder.addCase(updateUser.fulfilled, (state, action) => {
       state.user = action.payload;
-      state.error = null;
-    });
-    builder.addCase(updateUser.rejected, (state, action) => {
-      state.error = action.error.message || 'Update failed';
     });
   }
 });
@@ -143,7 +131,6 @@ const userSlice = createSlice({
 export const getUserSelector = (state: RootState) => state.user.user;
 export const getIsAuthCheckedSelector = (state: RootState) =>
   state.user.isAuthChecked;
-export const getUserErrorSelector = (state: RootState) => state.user.error;
 
 export const { authChecked } = userSlice.actions;
 export default userSlice.reducer;
